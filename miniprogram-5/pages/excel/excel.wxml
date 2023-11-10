@@ -1,0 +1,8 @@
+<view class="container">
+  <button bindtap="importExcel">导入Excel表格</button>
+  <view wx:for="{{excelData}}" wx:for-item="row" wx:for-index="rowIndex">
+  <view wx:for="{{row}}" wx:for-item="cell" wx:for-index="colIndex">
+    <text>{{cell}}</text>  <!-- 输出单元格的值 -->
+  </view>
+</view>
+</view>
