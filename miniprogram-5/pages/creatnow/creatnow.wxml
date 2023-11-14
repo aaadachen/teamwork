@@ -1,0 +1,7 @@
+<view wx:for="{{params1}}" wx:key="index" class="rectangle">
+<button bindtap="resultlist" data-index="{{index}}">
+  <text>{{item}}</text>
+  <text>{{params2[index]}}</text>
+  <text>{{params3[index]}}</text>
+</button>
+</view>

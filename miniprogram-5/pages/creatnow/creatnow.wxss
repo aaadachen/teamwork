@@ -1,0 +1,5 @@
+.rectangle {
+  width: 200rpx;
+  height: 100rpx;
+  margin: 10rpx;
+}
