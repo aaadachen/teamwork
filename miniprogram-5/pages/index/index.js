@@ -1,48 +1,87 @@
 // index.js
+
+const { default: Atlas } = require("XrFrame/assets/Atlas");
+
 // 获取应用实例
 const app = getApp()
 
 Page({
-  data: {
-    motto: 'Hello World',
-    userInfo: {},
-    hasUserInfo: false,
-    canIUse: wx.canIUse('button.open-type.getUserInfo'),
-    canIUseGetUserProfile: false,
-    canIUseOpenData: wx.canIUse('open-data.type.userAvatarUrl') && wx.canIUse('open-data.type.userNickName') // 如需尝试获取用户信息可改为false
+  data:{
+    phone :'',
+    inputcode:'',
+    recode:'',
+    mismatchTip: '', // 提示信息
   },
-  // 事件处理函数
-  bindViewTap() {
-    wx.navigateTo({
-      url: '../logs/logs'
-    })
+  onShow() {//每次回到这个页面信息自动清零
+    this.setData({
+      mismatchTip: '',
+      phone :'',
+      inputcode:'',
+      recode:'',
+    });
   },
-  onLoad() {
-    if (wx.getUserProfile) {
+  inputphone: function(e) {
+    this.setData({
+      phone: e.detail.value
+    });
+  },
+  inputpassword: function(e) {
+    this.setData({
+      inputcode: e.detail.value
+    });
+  },
+  reinput: function(e) {
+    this.setData({
+      recode: e.detail.value
+    });
+    this.comparePasswords();
+  },
+  comparePasswords() {
+    const inputcode = this.data.inputcode;
+    const recode = this.data.recode;
+    if (inputcode !== recode) {
       this.setData({
-        canIUseGetUserProfile: true
-      })
+        mismatchTip: '密码不一致',
+      });
+    } else {
+      this.setData({
+        mismatchTip: '',
+      });
     }
   },
-  getUserProfile(e) {
-    // 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认，开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
-    wx.getUserProfile({
-      desc: '展示用户信息', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
-      success: (res) => {
-        console.log(res)
-        this.setData({
-          userInfo: res.userInfo,
-          hasUserInfo: true
-        })
-      }
-    })
-  },
-  getUserInfo(e) {
-    // 不推荐使用getUserInfo获取用户信息，预计自2021年4月13日起，getUserInfo将不再弹出弹窗，并直接返回匿名的用户个人信息
-    console.log(e)
-    this.setData({
-      userInfo: e.detail.userInfo,
-      hasUserInfo: true
+  login:function(){
+    console.log(this.data.phone,this.data.inputcode);
+    //将手机号和密码发送给后端
+    wx.request({
+      url: 'url',
+      data: {
+        phone:this.data.phone,
+        code:this.data.inputcode,
+      },
+      method: "POST",
+      success: function(res) {
+        if(res.data.status){
+          //初始化用户信息
+          //app.initUserInfo(res.data.data);
+
+          //登录成功，跳转页面
+          //处理登录状态
+          //讲手机号放到所有页面公用的位置
+          //1.调用公用的alobalData
+          app.globalData.phone=res.data.data.phone;
+          //2.在本地'cookie"中赋值，方便保存登录信息，不需要每次进入都登录
+          wx.setStorageSync('phone', res.data.data.phone);
+          wx.navigateTo({
+            url: 'url',//要跳转的页面
+          })
+        }
+        else{
+          wx.showToast({
+            title: '登录失败',
+            icon:'none'
+          })
+        }
+      },
     })
   }
 })
